@@ -56,5 +56,29 @@ namespace Project2_NZWalks.API.Controllers
 
             return Ok(regionToSend);
         }
+
+        [HttpPost]
+        public IActionResult AddRegion(AddRegionDto regionToAdd)
+        {
+            var regionToAddToDB = new Region
+            {
+                Code = regionToAdd.Code,
+                Name = regionToAdd.Name,
+                RegionImageURL = regionToAdd.RegionImageURL
+            };
+
+            dbContext.Regions.Add(regionToAddToDB);
+            dbContext.SaveChanges();
+
+            var newRegionDto = new RegionDto
+            {
+                Id = regionToAddToDB.Id,
+                Code = regionToAddToDB.Code,
+                Name = regionToAddToDB.Name,
+                RegionImageURL = regionToAddToDB.RegionImageURL
+            };
+
+            return CreatedAtAction(nameof(GetRegionById), new { id = newRegionDto.Id }, newRegionDto);
+        }
     }
 }
