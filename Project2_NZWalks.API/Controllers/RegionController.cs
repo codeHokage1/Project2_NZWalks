@@ -80,5 +80,38 @@ namespace Project2_NZWalks.API.Controllers
 
             return CreatedAtAction(nameof(GetRegionById), new { id = newRegionDto.Id }, newRegionDto);
         }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateRegion(Guid id, AddRegionDto updatedRegion)
+        {
+            var regionToUpdate = dbContext.Regions.Find(id);
+            if (regionToUpdate == null)
+            {
+                return NotFound();
+            }
+
+            regionToUpdate.Code = updatedRegion.Code;
+            regionToUpdate.Name = updatedRegion.Name;
+            regionToUpdate.RegionImageURL = updatedRegion.RegionImageURL;
+
+            dbContext.SaveChanges();
+
+            return Ok(regionToUpdate);
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteRegion(Guid id)
+        {
+            var foundRegion = dbContext.Regions.Find(id);
+            if (foundRegion == null)
+            {
+                return NotFound();
+            }
+
+            dbContext.Regions.Remove(foundRegion);
+            dbContext.SaveChanges();
+
+            return NoContent();
+        }
     }
 }
