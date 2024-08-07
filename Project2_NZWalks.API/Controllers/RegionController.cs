@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Project2_NZWalks.API.Data;
 using Project2_NZWalks.API.Models.DTOs;
 using Project2_NZWalks.API.Models.Entities;
@@ -18,9 +19,9 @@ namespace Project2_NZWalks.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetRegions()
+        public async Task<IActionResult> GetRegions()
         {
-            var regionsFromDB = dbContext.Regions.ToList();
+            var regionsFromDB = await dbContext.Regions.ToListAsync();
 
             var regionsToSend = new List<RegionDto>();
             foreach(var region in regionsFromDB)
@@ -38,9 +39,9 @@ namespace Project2_NZWalks.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetRegionById(Guid id)
+        public async Task<IActionResult> GetRegionById(Guid id)
         {
-            var foundRegion = dbContext.Regions.Find(id);
+            var foundRegion = await dbContext.Regions.FindAsync(id);
             if (foundRegion == null)
             {
                 return NotFound();
@@ -58,7 +59,7 @@ namespace Project2_NZWalks.API.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddRegion(AddRegionDto regionToAdd)
+        public async Task<IActionResult> AddRegion(AddRegionDto regionToAdd)
         {
             var regionToAddToDB = new Region
             {
@@ -67,8 +68,8 @@ namespace Project2_NZWalks.API.Controllers
                 RegionImageURL = regionToAdd.RegionImageURL
             };
 
-            dbContext.Regions.Add(regionToAddToDB);
-            dbContext.SaveChanges();
+            await dbContext.Regions.AddAsync(regionToAddToDB);
+            await dbContext.SaveChangesAsync();
 
             var newRegionDto = new RegionDto
             {
@@ -82,9 +83,9 @@ namespace Project2_NZWalks.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateRegion(Guid id, AddRegionDto updatedRegion)
+        public async Task<IActionResult> UpdateRegion(Guid id, AddRegionDto updatedRegion)
         {
-            var regionToUpdate = dbContext.Regions.Find(id);
+            var regionToUpdate = await dbContext.Regions.FindAsync(id);
             if (regionToUpdate == null)
             {
                 return NotFound();
@@ -94,24 +95,24 @@ namespace Project2_NZWalks.API.Controllers
             regionToUpdate.Name = updatedRegion.Name;
             regionToUpdate.RegionImageURL = updatedRegion.RegionImageURL;
 
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             return Ok(regionToUpdate);
         }
 
         [HttpDelete]
-        public IActionResult DeleteRegion(Guid id)
+        public async Task<IActionResult> DeleteRegion(Guid id)
         {
-            var foundRegion = dbContext.Regions.Find(id);
+            var foundRegion = await dbContext.Regions.FindAsync(id);
             if (foundRegion == null)
             {
                 return NotFound();
             }
 
             dbContext.Regions.Remove(foundRegion);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
     }
 }
