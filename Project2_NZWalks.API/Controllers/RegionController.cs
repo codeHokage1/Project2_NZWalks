@@ -46,7 +46,7 @@ namespace Project2_NZWalks.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetRegionById(Guid id)
         {
-            var foundRegion = await dbContext.Regions.FindAsync(id);
+            var foundRegion = await regionInterface.GetRegionByIdAsync(id);
             if (foundRegion == null)
             {
                 return NotFound();
@@ -73,8 +73,10 @@ namespace Project2_NZWalks.API.Controllers
                 RegionImageURL = regionToAdd.RegionImageURL
             };
 
-            await dbContext.Regions.AddAsync(regionToAddToDB);
-            await dbContext.SaveChangesAsync();
+            //await dbContext.Regions.AddAsync(regionToAddToDB);
+            //await dbContext.SaveChangesAsync();
+
+            regionToAddToDB = await regionInterface.CreateRegionAsync(regionToAddToDB);
 
             var newRegionDto = new RegionDto
             {
@@ -90,32 +92,23 @@ namespace Project2_NZWalks.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRegion(Guid id, AddRegionDto updatedRegion)
         {
-            var regionToUpdate = await dbContext.Regions.FindAsync(id);
-            if (regionToUpdate == null)
+            var updatedRegionToDB = new Region
             {
-                return NotFound();
-            }
-
-            regionToUpdate.Code = updatedRegion.Code;
-            regionToUpdate.Name = updatedRegion.Name;
-            regionToUpdate.RegionImageURL = updatedRegion.RegionImageURL;
-
-            await dbContext.SaveChangesAsync();
-
-            return Ok(regionToUpdate);
+                Code = updatedRegion.Code,
+                Name = updatedRegion.Name,
+                RegionImageURL = updatedRegion.RegionImageURL
+            };
+            return Ok(await regionInterface.UpdateRegionAsync(id, updatedRegionToDB));
         }
 
         [HttpDelete]
         public async Task<IActionResult> DeleteRegion(Guid id)
         {
-            var foundRegion = await dbContext.Regions.FindAsync(id);
+            var foundRegion = await regionInterface.DeleteRegionAsync(id);
             if (foundRegion == null)
             {
                 return NotFound();
             }
-
-            dbContext.Regions.Remove(foundRegion);
-            await dbContext.SaveChangesAsync();
 
             return Ok();
         }
