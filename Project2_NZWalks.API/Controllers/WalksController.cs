@@ -52,5 +52,20 @@ namespace Project2_NZWalks.API.Controllers
             var walkToSend = mapper.Map<WalkDTO>(walkFromDb);
             return Ok(walkToSend);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateWalk(Guid id, AddWalkDto walkToUpdate)
+        {
+            var walkToUpdateInDB = mapper.Map<Walk>(walkToUpdate);
+            var updatedWalk = await walksRepo.UpdateWalk(id, walkToUpdateInDB);
+            if(updatedWalk == null)
+            {
+                return NotFound();
+            }
+
+            var updatedWalkDto = mapper.Map<WalkDTO>(updatedWalk);
+            return Ok(updatedWalkDto);          
+           
+        }
     }
 }

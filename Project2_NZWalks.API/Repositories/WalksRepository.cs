@@ -36,5 +36,24 @@ namespace Project2_NZWalks.API.Repositories
 
             return foundWalk;
         }
+
+        public async Task<Walk?> UpdateWalk(Guid id, Walk walk)
+        {
+            var foundWalk = await dbContext.Walks
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (foundWalk == null)
+            {
+                return null;
+            }
+
+            foundWalk.Name = walk.Name;
+            foundWalk.Description = walk.Description;
+            foundWalk.LengthInKM = walk.LengthInKM;
+            foundWalk.WalkImageURL = walk.WalkImageURL;
+            foundWalk.RegionId = walk.RegionId;
+            foundWalk.DifficultyId = walk.DifficultyId;
+            await dbContext.SaveChangesAsync();
+            return foundWalk;
+        }
     }
 }
