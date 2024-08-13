@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project2_NZWalks.API.Data;
@@ -14,31 +15,21 @@ namespace Project2_NZWalks.API.Controllers
     {
         private readonly NZWalksDbContext dbContext;
         private readonly IRegionInterface regionInterface;
+        private readonly IMapper mapper;
 
-        public RegionController(NZWalksDbContext dbContext, IRegionInterface regionInterface)
+        public RegionController(NZWalksDbContext dbContext, IRegionInterface regionInterface, IMapper mapper)
         {
             this.dbContext = dbContext;
             this.regionInterface = regionInterface;
+            this.mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetRegions()
         {
-            // var regionsFromDB = await dbContext.Regions.ToListAsync();
             var regionsFromDB = await regionInterface.GetRegionsAsync();
 
-
-            var regionsToSend = new List<RegionDto>();
-            foreach(var region in regionsFromDB)
-            {
-                regionsToSend.Add(new RegionDto
-                {
-                    Id = region.Id,
-                    Code = region.Code,
-                    Name = region.Name,
-                    RegionImageURL = region.RegionImageURL
-                });
-            }
+            var regionsToSend = mapper.Map<List<RegionDto>>(regionsFromDB);
 
             return Ok(regionsToSend);
         }
@@ -52,13 +43,7 @@ namespace Project2_NZWalks.API.Controllers
                 return NotFound();
             }
 
-            var regionToSend = new RegionDto
-            {
-                Id = foundRegion.Id,
-                Code = foundRegion.Code,
-                Name = foundRegion.Name,
-                RegionImageURL = foundRegion.RegionImageURL
-            };
+            var regionToSend = mapper.Map<RegionDto>(foundRegion);
 
             return Ok(regionToSend);
         }
@@ -66,25 +51,11 @@ namespace Project2_NZWalks.API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddRegion(AddRegionDto regionToAdd)
         {
-            var regionToAddToDB = new Region
-            {
-                Code = regionToAdd.Code,
-                Name = regionToAdd.Name,
-                RegionImageURL = regionToAdd.RegionImageURL
-            };
-
-            //await dbContext.Regions.AddAsync(regionToAddToDB);
-            //await dbContext.SaveChangesAsync();
+            var regionToAddToDB = mapper.Map<Region>(regionToAdd);
 
             regionToAddToDB = await regionInterface.CreateRegionAsync(regionToAddToDB);
 
-            var newRegionDto = new RegionDto
-            {
-                Id = regionToAddToDB.Id,
-                Code = regionToAddToDB.Code,
-                Name = regionToAddToDB.Name,
-                RegionImageURL = regionToAddToDB.RegionImageURL
-            };
+            var newRegionDto = mapper.Map<RegionDto>(regionToAddToDB);
 
             return CreatedAtAction(nameof(GetRegionById), new { id = newRegionDto.Id }, newRegionDto);
         }
@@ -92,12 +63,7 @@ namespace Project2_NZWalks.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRegion(Guid id, AddRegionDto updatedRegion)
         {
-            var updatedRegionToDB = new Region
-            {
-                Code = updatedRegion.Code,
-                Name = updatedRegion.Name,
-                RegionImageURL = updatedRegion.RegionImageURL
-            };
+            var updatedRegionToDB = mapper.Map<Region>(updatedRegion);
             return Ok(await regionInterface.UpdateRegionAsync(id, updatedRegionToDB));
         }
 
