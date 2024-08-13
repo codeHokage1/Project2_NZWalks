@@ -38,10 +38,12 @@ namespace Project2_NZWalks.API.Controllers
             (
                 [FromQuery] string? walkName = null, 
                 [FromQuery] string? sortBy = null, 
-                [FromQuery] bool isAscending = true
+                [FromQuery] bool isAscending = true,
+                [FromQuery] int page = 1,
+                [FromQuery] int pageSize = 5
             )
         {
-            var walksFromDB = await walksRepo.GetAllWalks(walkName, sortBy, isAscending);
+            var walksFromDB = await walksRepo.GetAllWalks(walkName, sortBy, isAscending, page, pageSize);
 
             var walksToSend = mapper.Map<List<WalkDTO>>(walksFromDB);
             return Ok(walksToSend);
