@@ -67,5 +67,17 @@ namespace Project2_NZWalks.API.Controllers
             return Ok(updatedWalkDto);          
            
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteWalk(Guid id)
+        {
+            var walkToDelete = await walksRepo.DeleteWalk(id);
+            if (walkToDelete == null)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
     }
 }

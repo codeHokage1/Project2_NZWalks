@@ -55,5 +55,19 @@ namespace Project2_NZWalks.API.Repositories
             await dbContext.SaveChangesAsync();
             return foundWalk;
         }
+
+        public async Task<Walk?> DeleteWalk(Guid id)
+        {
+            var foundWalk = await dbContext.Walks.FindAsync(id);
+            if (foundWalk == null)
+            {
+                return null;
+            }
+
+            dbContext.Walks.Remove(foundWalk);
+            await dbContext.SaveChangesAsync();
+            return foundWalk;
+        }
+
     }
 }
