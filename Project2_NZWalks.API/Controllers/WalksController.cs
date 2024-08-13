@@ -23,6 +23,10 @@ namespace Project2_NZWalks.API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddWalk(AddWalkDto walkToAdd)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var walkToAddToDB = mapper.Map<Walk>(walkToAdd);
             var addedWalk = await walksRepo.CreateWalk(walkToAddToDB);
 
@@ -56,6 +60,10 @@ namespace Project2_NZWalks.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateWalk(Guid id, AddWalkDto walkToUpdate)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var walkToUpdateInDB = mapper.Map<Walk>(walkToUpdate);
             var updatedWalk = await walksRepo.UpdateWalk(id, walkToUpdateInDB);
             if(updatedWalk == null)
