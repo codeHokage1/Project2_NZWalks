@@ -30,5 +30,27 @@ namespace Project2_NZWalks.API.Controllers
 
             return StatusCode(201, addedWalkDto);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetWalks()
+        {
+            var walksFromDB = await walksRepo.GetAllWalks();
+
+            var walksToSend = mapper.Map<List<WalkDTO>>(walksFromDB);
+            return Ok(walksToSend);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetWalkById(Guid id)
+        {
+            var walkFromDb = await walksRepo.GetWalkById(id);
+            if (walkFromDb == null)
+            {
+                return NotFound();
+            }
+
+            var walkToSend = mapper.Map<WalkDTO>(walkFromDb);
+            return Ok(walkToSend);
+        }
     }
 }
