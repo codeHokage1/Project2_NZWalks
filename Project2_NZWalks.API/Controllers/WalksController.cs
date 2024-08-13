@@ -34,9 +34,14 @@ namespace Project2_NZWalks.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetWalks([FromQuery] string? walkName = null)
+        public async Task<IActionResult> GetWalks
+            (
+                [FromQuery] string? walkName = null, 
+                [FromQuery] string? sortBy = null, 
+                [FromQuery] bool isAscending = true
+            )
         {
-            var walksFromDB = await walksRepo.GetAllWalks(walkName);
+            var walksFromDB = await walksRepo.GetAllWalks(walkName, sortBy, isAscending);
 
             var walksToSend = mapper.Map<List<WalkDTO>>(walksFromDB);
             return Ok(walksToSend);
