@@ -34,9 +34,9 @@ namespace Project2_NZWalks.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetWalks()
+        public async Task<IActionResult> GetWalks([FromQuery] string? walkName = null)
         {
-            var walksFromDB = await walksRepo.GetAllWalks();
+            var walksFromDB = await walksRepo.GetAllWalks(walkName);
 
             var walksToSend = mapper.Map<List<WalkDTO>>(walksFromDB);
             return Ok(walksToSend);

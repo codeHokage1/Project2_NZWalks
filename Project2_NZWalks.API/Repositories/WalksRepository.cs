@@ -19,9 +19,14 @@ namespace Project2_NZWalks.API.Repositories
             return walk;
         }
 
-        public async Task<List<Walk>> GetAllWalks()
+        public async Task<List<Walk>> GetAllWalks(string? walkName = null)
         {
-            return await dbContext.Walks.Include("Difficulty").Include("Region").ToListAsync();
+            var allWalks = dbContext.Walks.Include("Difficulty").Include("Region").AsQueryable();
+            if (walkName !=  null)
+            {
+                allWalks = allWalks.Where(x => x.Name.Contains(walkName));
+            }
+            return await allWalks.ToListAsync();
         }
 
         public async Task<Walk?> GetWalkById(Guid id)
@@ -68,6 +73,5 @@ namespace Project2_NZWalks.API.Repositories
             await dbContext.SaveChangesAsync();
             return foundWalk;
         }
-
     }
 }
